@@ -6,9 +6,9 @@ typedef struct {
 	Heap_Interface*    heap;
 	Process_Interface* process;
 }
-Module;
+Global;
 
-Module _module = {0};
+Global _global = {0};
 
 
 void main(Process* process);
@@ -16,12 +16,12 @@ void main(Process* process);
 
 void start(Process* process)
 {
-	get_module_address_by_function(start);
-	Module* module = global_ptr(_module);
+	get_process_address;
+	Global* global = get_global(_global);
 
-	module->VESA = process->get(global_ptr("VESA"));
-	module->heap = process->get(global_ptr("heap"));
-	module->process = process->get(global_ptr("process"));
+	global->VESA = process->get(get_global("VESA"));
+	global->heap = process->get(get_global("heap"));
+	global->process = process->get(get_global("process"));
 
 	main(process);
 }
@@ -29,13 +29,13 @@ void start(Process* process)
 
 Frame* create_frame(Number width, Number height)
 {
-	get_module_address_by_function(create_frame);
-	Module* module = global_ptr(_module);
+	get_process_address;
+	Global* global = get_global(_global);
 
 
 	Frame* frame;
 
-	frame = module->heap->allocate(sizeof(Frame) + width * height * sizeof(frame->buffer[0]), 0);
+	frame = global->heap->allocate(sizeof(Frame) + width * height * sizeof(frame->buffer[0]), 0);
 
 	frame->scroll_x = 0;
 	frame->scroll_y = 0;
@@ -135,8 +135,8 @@ void draw_frame_in_frame(Frame* destination_frame, Frame *source_frame, Number x
 
 void draw_frame(Frame* frame, Number x, Number y)
 {
-	get_module_address_by_function(draw_frame);
-	Module* module = global_ptr(_module);
+	get_process_address;
+	Global* global = get_global(_global);
 
 
 	Number    i;
@@ -163,10 +163,10 @@ void draw_frame(Frame* frame, Number x, Number y)
 
 	source_line = frame->buffer;
 
-	if(module->VESA->bpp == 24) {
+	if(global->VESA->bpp == 24) {
 		Byte* destination_line;
 
-		destination_line = module->VESA->framebuffer + y * module->VESA->pitch + x * 3;
+		destination_line = global->VESA->framebuffer + y * global->VESA->pitch + x * 3;
 
 		for(i = 0; i < height; ++i) {
 			for(j = 0; j < width; ++j) {
@@ -174,13 +174,13 @@ void draw_frame(Frame* frame, Number x, Number y)
 			}
 
 			source_line += frame->width;
-			destination_line += module->VESA->pitch;
+			destination_line += global->VESA->pitch;
 		}
 	}
-	else if(module->VESA->bpp == 32) {
+	else if(global->VESA->bpp == 32) {
 		Byte* destination_line;
 
-		destination_line = module->VESA->framebuffer + y * module->VESA->pitch + x * 4;
+		destination_line = global->VESA->framebuffer + y * global->VESA->pitch + x * 4;
 
 		for(i = 0; i < height; ++i) {
 			for(j = 0; j < width; ++j) {
@@ -188,7 +188,7 @@ void draw_frame(Frame* frame, Number x, Number y)
 			}
 
 			source_line += frame->width;
-			destination_line += module->VESA->pitch;
+			destination_line += global->VESA->pitch;
 		}
 	}
 }
@@ -199,7 +199,7 @@ void draw_frame(Frame* frame, Number x, Number y)
 
 void draw_character(Frame* frame, Number x, Number y, Number character, Number32 color)
 {
-	get_module_address_by_function(draw_character);
+	get_process_address;
 
 
 	Number i;
@@ -234,9 +234,9 @@ void draw_character(Frame* frame, Number x, Number y, Number character, Number32
 	g = ((color >> 8) & 0xFF) + 1;
 	r = ((color >> 16) & 0xFF) + 1;
 	
-	//Byte(*glyphs)[95][128] = global_ptr(glyphs_8_16);
+	//Byte(*glyphs)[95][128] = get_global(glyphs_8_16);
 	//glyph = (*glyphs)[character - ' '];
-	glyph = (*(Byte(*)[95][128])global_ptr(glyphs_8_16))[character - ' '];
+	glyph = (*(Byte(*)[95][128])get_global(glyphs_8_16))[character - ' '];
 
 	line = frame->buffer + y * frame->width + x;
 
@@ -262,29 +262,29 @@ Graphics_Interface _interface;
 
 void main(Process* process)
 {
-	get_module_address_by_function(main);
-	Module* module = global_ptr(_module);
+	get_process_address;
+	Global* global = get_global(_global);
 
 
-	//if(process->get(global_ptr("graphics"))) {
+	//if(process->get(get_global("graphics"))) {
 	//	return;
 	//}
 
 
-	Graphics_Interface* interface = global_ptr(_interface);
+	Graphics_Interface* interface = get_global(_interface);
 
 	
-	interface->create_frame = global_ptr(create_frame);
-	interface->clean_frame = global_ptr(clean_frame);
-	interface->draw_frame = global_ptr(draw_frame);
-	interface->draw_frame_in_frame = global_ptr(draw_frame_in_frame);
-	interface->draw_rectangle = global_ptr(draw_rectangle);
-	interface->draw_character = global_ptr(draw_character);
-	interface->print = global_ptr(print);
+	interface->create_frame = get_global(create_frame);
+	interface->clean_frame = get_global(clean_frame);
+	interface->draw_frame = get_global(draw_frame);
+	interface->draw_frame_in_frame = get_global(draw_frame_in_frame);
+	interface->draw_rectangle = get_global(draw_rectangle);
+	interface->draw_character = get_global(draw_character);
+	interface->print = get_global(print);
 
-	process->create(global_ptr("graphics"), interface);
+	process->create(get_global("graphics"), interface);
 
 	for(;;) {
-		module->process->wait(0);
+		global->process->wait(0);
 	}
 }

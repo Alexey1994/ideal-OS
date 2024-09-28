@@ -4,9 +4,9 @@
 typedef struct {
 	Process_Interface* process;	
 }
-Module;
+Global;
 
-Module _module = {0};
+Global _global = {0};
 
 
 void main(Process* process);
@@ -14,10 +14,10 @@ void main(Process* process);
 
 void start(Process* process)
 {
-	get_module_address_by_function(start);
-	Module* module = global_ptr(_module);
+	get_process_address;
+	Global* global = get_global(_global);
 
-	module->process = process->get(global_ptr("process"));
+	global->process = process->get(get_global("process"));
 
 	main(process);
 }
@@ -163,8 +163,8 @@ Keyboard_Interface _interface;
 
 void main(Process* process)
 {
-	get_module_address_by_function(main);
-	Module* module = global_ptr(_module);
+	get_process_address;
+	Global* global = get_global(_global);
 
 
 /*
@@ -188,14 +188,14 @@ void main(Process* process)
 */
 
 
-	Keyboard_Interface* interface = global_ptr(_interface);
+	Keyboard_Interface* interface = get_global(_interface);
 
-	interface->read_key_state = global_ptr(read_key_state);
+	interface->read_key_state = get_global(read_key_state);
 
-	process->create(global_ptr("keyboard"), interface);
+	process->create(get_global("keyboard"), interface);
 
 
 	for(;;) {
-		module->process->wait(0);
+		global->process->wait(0);
 	}
 }

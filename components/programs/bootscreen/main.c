@@ -3,11 +3,11 @@
 
 void start(Process* process)
 {
-	get_module_address_by_function(start);
+	get_process_address;
 
 
-	Graphics_Interface* graphics = process->get(global_ptr("graphics"));
-	Process_Interface* process_interface = process->get(global_ptr("process"));
+	Graphics_Interface* graphics = process->get(get_global("graphics"));
+	Process_Interface* process_interface = process->get(get_global("process"));
 
 
 	Frame* frame;

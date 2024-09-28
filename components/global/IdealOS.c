@@ -26,13 +26,4 @@ Interface;
 #include "interfaces/keyboard.c"
 
 
-#define get_module_address_by_function(function) \
-	Number module_address; \
-	asm("call . + 5\n" "pop %0" : "=a"(module_address)); \
-	module_address -= (Number)&(function) + 15;
-
-#define global(name) *(void**)((Byte*)&(name) + module_address)
-#define global_ptr(name) ((Byte*)&(name) + module_address)
-
-
 #endif//API_INCLUDED

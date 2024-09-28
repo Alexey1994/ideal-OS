@@ -2,6 +2,13 @@
 #define PROCESS_INCLUDED
 
 
+#define get_process_address \
+	int process_address; \
+	asm("call . + 5\n" "pop %%eax\n" "sub $. - 1, %%eax\n" "mov %%eax, %0\n" : "=a"(process_address));
+
+#define get_global(name) ((Byte*)&(name) + process_address)
+
+
 typedef enum {
 	PROCESS_LOADED,
 	PROCESS_WORKING,
@@ -41,15 +48,6 @@ typedef struct {
 	Number ebp;
 }
 Process;
-
-
-#define get_module_address_by_function(function) \
-	Number module_address; \
-	asm("call . + 5\n" "pop %0" : "=a"(module_address)); \
-	module_address -= (Number)&(function) + 15;
-
-#define global(name) *(void**)((Byte*)&name + module_address)
-#define global_ptr(name) ((Byte*)&name + module_address)
 
 
 typedef struct {

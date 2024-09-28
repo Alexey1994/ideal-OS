@@ -84,12 +84,12 @@ Signed_Number print_characters(Printer* printer, Byte* characters, Number number
 
 void print(Printer* printer, Byte* parameters, ...)
 {
-	get_module_address_by_function(print);
+	get_process_address;
 
 
 	Writer writer = {
 		.source = printer,
-		.write_bytes = global_ptr(print_characters)
+		.write_bytes = get_global(print_characters)
 	};
 
 	write(&writer, parameters, &parameters + 1);
