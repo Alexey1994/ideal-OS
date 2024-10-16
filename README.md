@@ -1,4 +1,4 @@
-# IdealOS
+# ideal-OS
 Component of ideal world
 
 ### YouTube Overview
